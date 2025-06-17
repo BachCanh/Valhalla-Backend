@@ -8,8 +8,7 @@ const User = sequelize.define(
     role: { type: DataTypes.STRING(10) },
     email: { type: DataTypes.STRING(100), unique: true },
     password: { type: DataTypes.STRING(255) },
-    first_name: { type: DataTypes.STRING(255) },
-    last_name: { type: DataTypes.STRING(50) },
+    fullname: { type: DataTypes.STRING(255) },
     phone_number: { type: DataTypes.STRING(15) },
   },
   {
