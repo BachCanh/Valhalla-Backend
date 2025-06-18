@@ -37,6 +37,7 @@ module.exports.getAllAppointmentsBelonged = async (req, res) => {
 
     return res.json(result);
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ error: err.message });
   }
 };
