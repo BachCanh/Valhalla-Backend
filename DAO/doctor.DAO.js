@@ -1,4 +1,4 @@
-const { Doctor, User } = require("../models/index");
+const { Doctor, User, Department } = require("../models/index");
 
 class DoctorDAO {
   static async getDoctorsWithDepartmentID(departmentId) {
@@ -8,6 +8,10 @@ class DoctorDAO {
         {
           model: User,
           attributes: ["id", "fullname", "email", "phone_number"],
+        },
+        {
+          model: Department,
+          attributes: ["id", "name", "description"],
         },
       ],
     });
