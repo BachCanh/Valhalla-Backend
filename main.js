@@ -7,6 +7,8 @@ const sequelize = require("./config/database");
 const modelInitialization = require("./models/index");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/auth.route");
+const departmentRoutes = require("./routes/department.route");
+const symptomRoutes = require("./routes/symptom.route");
 app.use(
   cors({
     origin: process.env.FRONT_END_URI,
@@ -29,6 +31,8 @@ sequelize
   .catch((err) => console.log(`Db connection failed:`, err));
 
 app.use("/auth", authRoutes);
+app.use("/department", departmentRoutes);
+app.use("/symptom", symptomRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server runniong on http://localhost:${PORT}`);
