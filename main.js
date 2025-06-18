@@ -7,6 +7,7 @@ const sequelize = require("./config/database");
 const modelInitialization = require("./models/index");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/auth.route");
+const appointmentRoutes = require("./routes/appointment.route");
 app.use(
   cors({
     origin: process.env.FRONT_END_URI,
@@ -20,6 +21,7 @@ const PORT = process.env.PORT || 5000;
 
 const doctorRoutes = require("./routes/doctor.route");
 app.use("/doctor", doctorRoutes);
+app.use("/appointment", appointmentRoutes);
 
 sequelize
   .authenticate()
