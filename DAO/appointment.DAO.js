@@ -1,4 +1,8 @@
 const Appointment = require("../models/appointment.model");
+const Doctor = require("../models/doctor.model");
+const User = require("../models/user.model");
+const Department = require("../models/department.model");
+
 const { Op } = require("sequelize");
 class AppointmentDAO {
   async createAppointment(appointmentData) {
@@ -21,30 +25,36 @@ class AppointmentDAO {
     { page = 1, limit = 10, status = "all" }
   ) {
     const offset = (page - 1) * limit;
-
-    // Get start of today (00:00:00.000)
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
-
     let where = { patient_id: patientId };
 
-    if (status === "upcoming") {
-      // Include today and future
-      where.appoint_taken_date = { [Op.gte]: startOfToday };
-    } else if (status === "past") {
-      // Strictly before today
-      where.appoint_taken_date = { [Op.lt]: startOfToday };
+    // 👉 Filter theo status (ENUM)
+    if (status !== "all") {
+      where.status = status;
     }
 
     const { count, rows } = await Appointment.findAndCountAll({
       where,
-      order: [["appoint_taken_date", "ASC"]],
+      order: [["appoint_taken_date", "DESC"]],
       offset: Number(offset),
       limit: Number(limit),
+      include: [
+        {
+          model: Doctor,
+          include: [
+            {
+              model: User, // This gives you the doctor's full name
+              attributes: ["fullname"],
+            },
+            {
+              model: Department,
+              attributes: ["name"], // or "dept_name", depending on your column
+            },
+          ],
+        },
+      ],
     });
 
     const totalPages = Math.ceil(count / limit);
-
     if (page > totalPages && totalPages !== 0) {
       throw new Error("Requested page exceeds total number of pages.");
     }
