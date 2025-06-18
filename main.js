@@ -7,6 +7,7 @@ const sequelize = require("./config/database");
 const modelInitialization = require("./models/index");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/auth.route");
+
 app.use(
   cors({
     origin: process.env.FRONT_END_URI,

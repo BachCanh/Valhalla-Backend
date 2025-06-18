@@ -23,14 +23,15 @@ const Appointment = sequelize.define(
         key: "user_id",
       },
     },
-    duration: {
-      type: DataTypes.TEXT,
+    appointment_time: {
+      type: DataTypes.TIME, // kiểu giờ (hh:mm:ss)
+      allowNull: false,
     },
     appoint_taken_date: {
       type: DataTypes.DATE,
     },
     status: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.ENUM("scheduled", "confirmed", "completed", "cancelled"),
       defaultValue: "scheduled",
     },
     note: {
