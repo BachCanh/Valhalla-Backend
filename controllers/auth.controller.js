@@ -28,7 +28,8 @@ module.exports.login = async (req, res) => {
     if (!userFound) throw new Error("Không tìm thấy thông tin đăng nhập");
 
     const user = userFound.get({ plain: true });
-    const isMatch = bcrypt.compare(password, user?.password);
+    const isMatch = await bcrypt.compare(password, user?.password);
+
     if (!isMatch) throw new Error("Thông tin đăng nhập không chính xác");
 
     const accessToken = generateAccessToken(user);
