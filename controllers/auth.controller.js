@@ -15,7 +15,7 @@ module.exports.isEmailAvailable = async (req, res) => {
       return res.status(409).json({ message: "Email đã có người đăng kí" });
 
     return res.status(200).json({ message: "Email chưa có người đăng kí" });
-  } catch {
+  } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 };
@@ -67,6 +67,7 @@ module.exports.register = async (req, res) => {
 
     return res.status(201).json({ message: "Register successfully." });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ error: err.message });
   }
 };
