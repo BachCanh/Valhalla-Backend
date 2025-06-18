@@ -28,3 +28,18 @@ module.exports.getDoctorsByDepartment = async (req, res) => {
     res.status(500).json({ message: "Lỗi máy chủ nội bộ." });
   }
 };
+
+module.exports.getDoctorBusyDates = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+
+    if (!doctorId) {
+      return res.status(400).json({ message: "Doctor ID is required." });
+    }
+
+    const busyDates = await DoctorDAO.getDoctorBusyDates(doctorId);
+    return res.status(200).json({ busyDates });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+};

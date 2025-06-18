@@ -7,5 +7,6 @@ router.get(
   "/by-department/:departmentId",
   doctorController.getDoctorsByDepartment
 );
+router.get("/busyDates/:doctorId", doctorController.getDoctorBusyDates);
 
 module.exports = router;

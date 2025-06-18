@@ -33,7 +33,6 @@ app.use("/appointment", appointmentRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-
 // Database connection
 sequelize
   .authenticate()
