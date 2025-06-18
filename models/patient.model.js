@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
+const User = require("./user.model");
 
 const Patient = sequelize.define(
   "Patient",
@@ -27,5 +28,8 @@ const Patient = sequelize.define(
     tableName: "patients",
   }
 );
+
+Patient.belongsTo(User, { foreignKey: "user_id" });
+User.hasOne(Patient, { foreignKey: "user_id" });
 
 module.exports = Patient;
