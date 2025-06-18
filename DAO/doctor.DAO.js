@@ -1,4 +1,4 @@
-const { Doctor, User, Appointment } = require("../models/index");
+const { Doctor, User, Appointment, Department } = require("../models/index");
 const { Op } = require("sequelize");
 
 class DoctorDAO {
@@ -9,6 +9,10 @@ class DoctorDAO {
         {
           model: User,
           attributes: ["id", "fullname", "email", "phone_number"],
+        },
+        {
+          model: Department,
+          attributes: ["id", "name", "description"],
         },
       ],
     });

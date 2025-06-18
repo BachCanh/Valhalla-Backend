@@ -4,6 +4,7 @@ const UserDAO = require("../DAO/user.DAO");
 const Patient = require("../models/patient.model");
 const PatientDAO = require("../DAO/patient.DAO");
 const COOKIE_OPTIONS = require("../config/cookieOptions");
+const jwt = require("jsonwebtoken");
 module.exports.isEmailAvailable = async (req, res) => {
   try {
     const { email } = req.body;
@@ -27,7 +28,8 @@ module.exports.login = async (req, res) => {
     if (!userFound) throw new Error("Không tìm thấy thông tin đăng nhập");
 
     const user = userFound.get({ plain: true });
-    const isMatch = bcrypt.compare(password, user?.password);
+    const isMatch = await bcrypt.compare(password, user?.password);
+
     if (!isMatch) throw new Error("Thông tin đăng nhập không chính xác");
 
     const accessToken = generateAccessToken(user);
@@ -40,7 +42,6 @@ module.exports.login = async (req, res) => {
 
 module.exports.register = async (req, res) => {
   try {
-    console.log("Registering patient...: ", req.body.patient);
     const {
       email,
       password,
@@ -56,6 +57,8 @@ module.exports.register = async (req, res) => {
         .status(400)
         .json({ message: "Email and password are required." });
     }
+    const userFound = await UserDAO.findUserByEmail(email);
+    if (userFound) throw new Error("Email đã người đăng kí");
 
     await PatientDAO.registerPatient(
       { email, password, fullname, phone_number },
@@ -65,5 +68,37 @@ module.exports.register = async (req, res) => {
     return res.status(201).json({ message: "Register successfully." });
   } catch (err) {
     return res.status(500).json({ error: err.message });
+  }
+};
+module.exports.logout = async (req, res) => {
+  try {
+    res.clearCookie("accessToken", COOKIE_OPTIONS.normal);
+    return res.status(200).json({ message: "Đăng xuất thành công" });
+  } catch {
+    return res.status(500).json({ message: "Lỗi máy chủ nội bộ" });
+  }
+};
+
+module.exports.validateJWT = async (req, res) => {
+  const token = req.cookies.accessToken;
+  if (!token) {
+    res.clearCookie("accessToken", COOKIE_OPTIONS.normal);
+    return res
+      .status(401)
+      .json({ message: "Không được phép - Không có token" });
+  }
+  try {
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+      if (err) {
+        return res.status(403).json({
+          message: "Không được phép - Token không hợp lệ hoặc đã hết hạn",
+        });
+      }
+      return res.status(200).json({ message: "Xác thực thành công" });
+    });
+  } catch (e) {
+    return res.status(403).json({
+      message: "Không được phép - Token không hợp lệ hoặc đã hết hạn",
+    });
   }
 };
