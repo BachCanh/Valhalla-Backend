@@ -67,3 +67,36 @@ module.exports.register = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+module.exports.logout = async (req, res) => {
+  try {
+    res.clearCookie("accessToken", COOKIE_OPTIONS.normal);
+    return res.status(200).json({ message: "Đăng xuất thành công" });
+  } catch {
+    return res.status(500).json({ message: "Lỗi máy chủ nội bộ" });
+  }
+};
+
+module.exports.validateJWT = async (req, res) => {
+  const token = req.cookies.accessToken;
+
+  if (!token) {
+    res.clearCookie("accessToken", COOKIE_OPTIONS.normal);
+    return res
+      .status(401)
+      .json({ message: "Không được phép - Không có token" });
+  }
+
+  try {
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
+      if (err)
+        return res.status(403).json({
+          message: "Không được phép - Token không hợp lệ hoặc đã hết hạn",
+        });
+      return res.status(200).json({ message: "Xác thực thành công" });
+    });
+  } catch {
+    return res.status(403).json({
+      message: "Không được phép - Token không hợp lệ hoặc đã hết hạn",
+    });
+  }
+};
