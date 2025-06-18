@@ -6,6 +6,7 @@ const sequelize = require("./config/database");
 //This line is used for create all table immediately when we first launch the main.js so dont remove it
 const modelInitialization = require("./models/index");
 const cookieParser = require("cookie-parser");
+const authRoutes = require("./routes/auth.route");
 app.use(
   cors({
     origin: process.env.FRONT_END_URI,
@@ -26,6 +27,8 @@ sequelize
   .then(() => sequelize.sync({ alter: true }))
   .then(() => console.log("Model synchronized"))
   .catch((err) => console.log(`Db connection failed:`, err));
+
+app.use("/auth", authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server runniong on http://localhost:${PORT}`);
