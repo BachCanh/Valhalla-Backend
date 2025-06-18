@@ -16,7 +16,7 @@ class AppointmentDAO {
       throw error; // Re-throw the error for handling in the controller
     }
   }
-  static async getAppointmentsByPatient(
+  async getAppointmentsByPatient(
     patientId,
     { page = 1, limit = 10, status = "all" }
   ) {

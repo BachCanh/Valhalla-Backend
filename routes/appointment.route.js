@@ -5,7 +5,7 @@ const appointmentController = require("../controllers/appointment.controller");
 router.route("/bookingAppointment").post(authMiddleware.authenticateToken, appointmentController.bookingAppointment);
 router.get(
   "/getAllAppointmentsBelonged",
-  authenticateToken,
+  authMiddleware.authenticateToken,
   appointmentController.getAllAppointmentsBelonged
 );
 module.exports = router;
