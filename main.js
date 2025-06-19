@@ -14,6 +14,7 @@ const authRoutes = require("./routes/auth.route");
 const appointmentRoutes = require("./routes/appointment.route");
 
 const doctorRoutes = require("./routes/doctor.route");
+const patientRoutes = require("./routes/patient.route");
 const departmentRoutes = require("./routes/department.route");
 const symptomRoutes = require("./routes/symptom.route");
 const patientRoutes = require("./routes/patient.route");
@@ -46,6 +47,7 @@ sequelize
 // API routes
 app.use("/auth", authRoutes);
 app.use("/doctor", doctorRoutes);
+app.use("/patient", patientRoutes);
 app.use("/appointment", appointmentRoutes);
 app.use("/department", departmentRoutes);
 app.use("/symptom", symptomRoutes);
