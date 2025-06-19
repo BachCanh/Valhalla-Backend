@@ -130,7 +130,7 @@ module.exports.changePassword = async (req, res) => {
       return res.status(400).json({ message: "Current password is incorrect" });
     }
 
-    const saltRounds = Number(process.env.BCRYPT_SALT_ROUNDS) || 10;
+    const saltRounds = Number(process.env.SALT_ROUNDS) || 10;
     const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
 
     await UserDAO.updateUserPassword(user.email, hashedNewPassword);
