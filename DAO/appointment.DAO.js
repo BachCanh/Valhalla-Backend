@@ -70,5 +70,42 @@ class AppointmentDAO {
       totalPages,
     };
   }
+  async cancelAppointment(appointmentId) {
+    try {
+      const appointment = await Appointment.findByPk(appointmentId);
+      console.log("Appointment found:", appointment);
+      console.log("Appointment ID:", appointmentId);
+      if (!appointment) {
+        return { success: false, message: "Không tìm thấy lịch hẹn" };
+      }
+
+      const appointmentDate = new Date(appointment.appoint_taken_date);
+      const timeParts = appointment.appointment_time.split(":");
+      appointmentDate.setHours(parseInt(timeParts[0], 10));
+      appointmentDate.setMinutes(parseInt(timeParts[1], 10));
+      appointmentDate.setSeconds(parseInt(timeParts[2] || 0, 10));
+
+      const now = new Date();
+
+      const timeDifference = (appointmentDate - now) / (1000 * 60 * 60);
+
+      if (timeDifference < 24) {
+        return {
+          success: false,
+          message:
+            "Chỉ được phép hủy lịch hẹn trước 24 giờ khi lịch hẹn diễn ra",
+        };
+      }
+
+      await appointment.update({ status: "cancelled" });
+      return {
+        success: true,
+        message: "Hủy lịch hẹn thành công",
+      };
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+      throw error;
+    }
+  }
 }
 module.exports = new AppointmentDAO();

@@ -41,3 +41,20 @@ module.exports.getAllAppointmentsBelonged = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
+module.exports.CancelAppointment = async (req, res) => {
+  console.log(req.body);
+  const { appointmentId } = req.body;
+  console.log("Cancelling appointment with ID:", appointmentId);
+  try {
+    const result = await AppointmentDAO.cancelAppointment(appointmentId);
+    if (result.success) {
+      return res.status(200).json({ message: result.message });
+    } else {
+      return res.status(400).json({ message: result.message });
+    }
+  } catch (error) {
+    console.error("Error cancelling appointment:", error);
+    return res.status(500).json({ message: "Lỗi máy chủ nội bộ." });
+  }
+};

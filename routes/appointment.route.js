@@ -13,4 +13,6 @@ router.get(
   authMiddleware.authenticateToken,
   appointmentController.getAllAppointmentsBelonged
 );
+
+router.post("/cancelAppointment", appointmentController.CancelAppointment);
 module.exports = router;
