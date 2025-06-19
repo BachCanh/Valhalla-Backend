@@ -14,13 +14,13 @@ router.get(
   appointmentController.getAllAppointmentsBelonged
 );
 
+router.post("/cancelAppointment", appointmentController.cancelAppointment);
 
-router.post("/cancelAppointment", appointmentController.CancelAppointment);
 router.get(
   "/getAllAppointmentForDoctor",
   authMiddleware.authenticateToken,
   authMiddleware.isDoctor,
-  appointmentController.getAllApointmentsOfDoctor
+  appointmentController.getAllAppointmentsOfDoctor
 );
 
 module.exports = router;
