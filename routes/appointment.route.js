@@ -18,15 +18,13 @@ router.get(
   appointmentController.getAllAppointmentsBelonged
 );
 
-// Cancel appointment (No auth assumed, you might want to add it)
-router.post("/cancelAppointment", appointmentController.CancelAppointment);
+router.post("/cancelAppointment", appointmentController.cancelAppointment);
 
-// Get all appointments for a doctor (Doctor only)
 router.get(
   "/getAllAppointmentForDoctor",
   authMiddleware.authenticateToken,
   authMiddleware.isDoctor,
-  appointmentController.getAllApointmentsOfDoctor
+  appointmentController.getAllAppointmentsOfDoctor
 );
 
 // Adjust appointment status (Doctor only)
