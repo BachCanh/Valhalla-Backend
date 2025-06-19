@@ -1,13 +1,17 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
+
 const appointmentController = require("../controllers/appointment.controller");
 const authMiddleware = require("../middlewares/authMiddleware");
-router
-  .route("/bookingAppointment")
-  .post(
-    authMiddleware.authenticateToken,
-    appointmentController.bookingAppointment
-  );
+
+// Booking appointment (Patient)
+router.post(
+  "/bookingAppointment",
+  authMiddleware.authenticateToken,
+  appointmentController.bookingAppointment
+);
+
+// Get all appointments for a logged-in user (Patient or Doctor)
 router.get(
   "/getAllAppointmentsBelonged",
   authMiddleware.authenticateToken,
@@ -21,6 +25,14 @@ router.get(
   authMiddleware.authenticateToken,
   authMiddleware.isDoctor,
   appointmentController.getAllAppointmentsOfDoctor
+);
+
+// Adjust appointment status (Doctor only)
+router.put(
+  "/adjustStatus",
+  authMiddleware.authenticateToken,
+  authMiddleware.isDoctor,
+  appointmentController.adjustStatus
 );
 
 module.exports = router;

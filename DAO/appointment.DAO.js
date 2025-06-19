@@ -23,6 +23,16 @@ class AppointmentDAO {
     }
   }
 
+  async findById(appointmentId) {
+    try {
+      const appointment = await Appointment.findByPk(appointmentId);
+      if (!appointment) return null;
+      return appointment.get({ plain: true });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getAppointmentsByPatient(patientId, { page = 1, limit = 10, status = "all" }) {
     const offset = (page - 1) * limit;
     let where = { patient_id: patientId };
@@ -84,7 +94,7 @@ class AppointmentDAO {
       appointmentDate.setSeconds(parseInt(timeParts[2] || 0, 10));
 
       const now = new Date();
-      const timeDifference = (appointmentDate - now) / (1000 * 60 * 60);
+      const timeDifference = (appointmentDate - now) / (1000 * 60 * 60); // in hours
 
       if (timeDifference < 24) {
         return {
@@ -146,6 +156,27 @@ class AppointmentDAO {
       page: Number(page),
       totalPages,
     };
+  }
+
+  async updateStatus(appointmentId, newStatus) {
+    try {
+      const [updatedCount] = await Appointment.update(
+        { status: newStatus },
+        { where: { id: appointmentId } }
+      );
+
+      if (updatedCount === 0) {
+        throw new Error("No appointment was updated");
+      }
+
+      const updatedAppointment = await Appointment.findOne({
+        where: { id: appointmentId },
+      });
+
+      return updatedAppointment.get({ plain: true });
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

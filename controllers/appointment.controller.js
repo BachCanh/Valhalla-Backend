@@ -69,7 +69,52 @@ module.exports.getAllAppointmentsOfDoctor = async (req, res) => {
 
     return res.json(result);
   } catch (err) {
-    console.log(err);
     return res.status(500).json({ error: err.message });
+  }
+};
+module.exports.adjustStatus = async (req, res) => {
+  try {
+    const { appointmentId, status } = req.body.sendData;
+    const { customerId: doctorId } = req.user;
+
+    // Validate status
+    if (!["confirmed", "rejected", "completed"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    // Find appointment
+    const appointment = await AppointmentDAO.findById(appointmentId);
+
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+
+    // Ensure appointment belongs to this doctor
+    if (appointment.doctor_id !== doctorId) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to update this appointment" });
+    }
+
+    // Only allow updates if status is "scheduled"
+    if (
+      appointment.status !== "scheduled" &&
+      appointment.status !== "confirmed"
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Only scheduled appointments can be updated" });
+    }
+
+    const newAppointment = await AppointmentDAO.updateStatus(
+      appointmentId,
+      status
+    );
+
+    return res
+      .status(200)
+      .json({ message: "Cập nhật trạng thái thành công", newAppointment });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
   }
 };
