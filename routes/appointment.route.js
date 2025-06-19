@@ -13,4 +13,10 @@ router.get(
   authMiddleware.authenticateToken,
   appointmentController.getAllAppointmentsBelonged
 );
+router.get(
+  "/getAllAppointmentForDoctor",
+  authMiddleware.authenticateToken,
+  authMiddleware.isDoctor,
+  appointmentController.getAllApointmentsOfDoctor
+);
 module.exports = router;

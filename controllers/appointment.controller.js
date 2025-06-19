@@ -41,3 +41,20 @@ module.exports.getAllAppointmentsBelonged = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+module.exports.getAllApointmentsOfDoctor = async (req, res) => {
+  try {
+    const { customerId: doctorId } = req.user;
+
+    const { page, limit, status } = req.query;
+    const result = await AppointmentDAO.getAllApointmentsOfDoctor(doctorId, {
+      page,
+      limit,
+      status,
+    });
+
+    return res.json(result);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: err.message });
+  }
+};
