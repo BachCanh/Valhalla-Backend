@@ -1,9 +1,11 @@
 const Appointment = require("../models/appointment.model");
 const Doctor = require("../models/doctor.model");
 const User = require("../models/user.model");
+const Patient = require("../models/patient.model");
 const Department = require("../models/department.model");
 
 const { Op } = require("sequelize");
+
 class AppointmentDAO {
   async createAppointment(appointmentData) {
     try {
@@ -17,17 +19,14 @@ class AppointmentDAO {
       return newAppointment;
     } catch (error) {
       console.error("Error creating appointment:", error);
-      throw error; // Re-throw the error for handling in the controller
+      throw error;
     }
   }
-  async getAppointmentsByPatient(
-    patientId,
-    { page = 1, limit = 10, status = "all" }
-  ) {
+
+  async getAppointmentsByPatient(patientId, { page = 1, limit = 10, status = "all" }) {
     const offset = (page - 1) * limit;
     let where = { patient_id: patientId };
 
-    // 👉 Filter theo status (ENUM)
     if (status !== "all") {
       where.status = status;
     }
@@ -42,12 +41,12 @@ class AppointmentDAO {
           model: Doctor,
           include: [
             {
-              model: User, // This gives you the doctor's full name
+              model: User,
               attributes: ["fullname"],
             },
             {
               model: Department,
-              attributes: ["name"], // or "dept_name", depending on your column
+              attributes: ["name"],
             },
           ],
         },
@@ -70,11 +69,10 @@ class AppointmentDAO {
       totalPages,
     };
   }
+
   async cancelAppointment(appointmentId) {
     try {
       const appointment = await Appointment.findByPk(appointmentId);
-      console.log("Appointment found:", appointment);
-      console.log("Appointment ID:", appointmentId);
       if (!appointment) {
         return { success: false, message: "Không tìm thấy lịch hẹn" };
       }
@@ -86,14 +84,12 @@ class AppointmentDAO {
       appointmentDate.setSeconds(parseInt(timeParts[2] || 0, 10));
 
       const now = new Date();
-
       const timeDifference = (appointmentDate - now) / (1000 * 60 * 60);
 
       if (timeDifference < 24) {
         return {
           success: false,
-          message:
-            "Chỉ được phép hủy lịch hẹn trước 24 giờ khi lịch hẹn diễn ra",
+          message: "Chỉ được phép hủy lịch hẹn trước 24 giờ khi lịch hẹn diễn ra",
         };
       }
 
@@ -107,5 +103,50 @@ class AppointmentDAO {
       throw error;
     }
   }
+
+  async getAllApointmentsOfDoctor(doctorId, { page = 1, limit = 10, status = "all" }) {
+    const offset = (page - 1) * limit;
+    let where = { doctor_id: doctorId };
+
+    if (status !== "all") {
+      where.status = status;
+    }
+
+    const { count, rows } = await Appointment.findAndCountAll({
+      where,
+      order: [["appoint_taken_date", "DESC"]],
+      offset: Number(offset),
+      limit: Number(limit),
+      include: [
+        {
+          model: Patient,
+          attributes: ["dob", "gender", "address"],
+          include: [
+            {
+              model: User,
+              attributes: ["fullname", "phone_number"],
+            },
+          ],
+        },
+      ],
+    });
+
+    const totalPages = Math.ceil(count / limit);
+    if (page > totalPages && totalPages !== 0) {
+      throw new Error("Requested page exceeds total number of pages.");
+    }
+
+    const plainAppointments = rows.map((appointment) =>
+      appointment.get({ plain: true })
+    );
+
+    return {
+      appointments: plainAppointments,
+      total: count,
+      page: Number(page),
+      totalPages,
+    };
+  }
 }
+
 module.exports = new AppointmentDAO();

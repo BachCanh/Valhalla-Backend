@@ -14,5 +14,13 @@ router.get(
   appointmentController.getAllAppointmentsBelonged
 );
 
+
 router.post("/cancelAppointment", appointmentController.CancelAppointment);
+router.get(
+  "/getAllAppointmentForDoctor",
+  authMiddleware.authenticateToken,
+  authMiddleware.isDoctor,
+  appointmentController.getAllApointmentsOfDoctor
+);
+
 module.exports = router;
