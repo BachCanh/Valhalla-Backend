@@ -5,6 +5,14 @@ class UserDAO {
       where: { email: email },
     });
   }
+  async updateUserPassword(email, newPassword) {
+    return await User.update(
+      { password: newPassword },
+      {
+        where: { email: email },
+      }
+    );
+  }
 }
 
 module.exports = new UserDAO();
