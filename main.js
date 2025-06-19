@@ -17,7 +17,6 @@ const doctorRoutes = require("./routes/doctor.route");
 const patientRoutes = require("./routes/patient.route");
 const departmentRoutes = require("./routes/department.route");
 const symptomRoutes = require("./routes/symptom.route");
-const patientRoutes = require("./routes/patient.route");
 
 // Middleware
 app.use(
