@@ -105,3 +105,39 @@ module.exports.validateJWT = async (req, res) => {
     });
   }
 };
+module.exports.changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        message: "Current password and new password are required",
+      });
+    }
+
+    if (!req.user || !req.user.email) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    const userFound = await UserDAO.findUserByEmail(req.user.email);
+    if (!userFound) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const user = userFound.get({ plain: true });
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current password is incorrect" });
+    }
+
+    const saltRounds = Number(process.env.BCRYPT_SALT_ROUNDS) || 10;
+    const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    await UserDAO.updateUserPassword(user.email, hashedNewPassword);
+
+    return res.status(200).json({ message: "Password changed successfully" });
+  } catch (err) {
+    console.error("Error changing password:", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
