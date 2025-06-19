@@ -17,6 +17,7 @@ const doctorRoutes = require("./routes/doctor.route");
 const patientRoutes = require("./routes/patient.route");
 const departmentRoutes = require("./routes/department.route");
 const symptomRoutes = require("./routes/symptom.route");
+const patientRoutes = require("./routes/patient.route");
 
 // Middleware
 app.use(
@@ -31,6 +32,7 @@ app.use(cookieParser());
 
 app.use("/doctor", doctorRoutes);
 app.use("/appointment", appointmentRoutes);
+app.use("/patient", patientRoutes);
 
 const PORT = process.env.PORT || 5000;
 

@@ -14,6 +14,13 @@ class UserDAO {
 
     const [affectedRows] = await User.update(updateData, options);
     return affectedRows > 0;
+  async updateUserPassword(email, newPassword) {
+    return await User.update(
+      { password: newPassword },
+      {
+        where: { email: email },
+      }
+    );
   }
 }
 

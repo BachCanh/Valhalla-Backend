@@ -26,6 +26,7 @@ const Appointment = sequelize.define(
     appointment_time: {
       type: DataTypes.TIME, // kiểu giờ (hh:mm:ss)
       allowNull: false,
+      defaultValue: "9:00:00",
     },
     appoint_taken_date: {
       type: DataTypes.DATE,
@@ -38,6 +39,7 @@ const Appointment = sequelize.define(
         "cancelled",
         "rejected"
       ),
+      allowNull: false,
       defaultValue: "scheduled",
     },
     note: {
