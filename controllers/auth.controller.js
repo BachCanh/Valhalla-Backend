@@ -34,7 +34,9 @@ module.exports.login = async (req, res) => {
 
     const accessToken = generateAccessToken(user);
     res.cookie("accessToken", accessToken, COOKIE_OPTIONS.normal);
-    return res.status(200).json({ message: "Đăng nhập thành công" });
+    return res
+      .status(200)
+      .json({ message: "Đăng nhập thành công", role: user.role });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
