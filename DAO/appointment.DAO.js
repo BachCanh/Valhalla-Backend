@@ -17,10 +17,21 @@ class AppointmentDAO {
       });
       return newAppointment;
     } catch (error) {
-      console.error("Error creating appointment:", error);
       throw error; // Re-throw the error for handling in the controller
     }
   }
+  async findById(appointmentId) {
+    try {
+      const appointment = await Appointment.findByPk(appointmentId);
+
+      if (!appointment) return null;
+
+      return appointment.get({ plain: true });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getAppointmentsByPatient(
     patientId,
     { page = 1, limit = 10, status = "all" }
@@ -117,6 +128,27 @@ class AppointmentDAO {
       page: Number(page),
       totalPages,
     };
+  }
+  async updateStatus(appointmentId, newStatus) {
+    try {
+      const [updatedCount] = await Appointment.update(
+        { status: newStatus },
+        { where: { id: appointmentId } }
+      );
+
+      if (updatedCount === 0) {
+        throw new Error("No appointment was updated");
+      }
+
+      // Optionally return the updated appointment
+      const updatedAppointment = await Appointment.findOne({
+        where: { id: appointmentId },
+      });
+
+      return updatedAppointment.get({ plain: true });
+    } catch (error) {
+      throw error;
+    }
   }
 }
 module.exports = new AppointmentDAO();

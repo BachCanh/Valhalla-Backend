@@ -19,4 +19,10 @@ router.get(
   authMiddleware.isDoctor,
   appointmentController.getAllApointmentsOfDoctor
 );
+router.put(
+  "/adjustStatus",
+  authMiddleware.authenticateToken,
+  authMiddleware.isDoctor,
+  appointmentController.adjustStatus
+);
 module.exports = router;
